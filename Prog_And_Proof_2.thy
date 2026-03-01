@@ -30,19 +30,24 @@ lemma add_0: "add m 0 = m"
 lemma zero_add: "m = add m 0"
   by (induct m) simp_all
 
-lemma add_rhs_succ: "add m (Suc n) = Suc (add m n)"
-  apply (induction m)
-  apply (simp_all)
-  
+lemma add_succ: "add m (Suc n) = Suc (add m n)"
+  by (induct m)
+  simp_all
 
 (* comm *)
 lemma add_com: "add m n = add n m"
-  apply(induction m)
-  apply(simp_all)
-  by (rule zero_add)
-  
-  
+  apply (induction m)
+  apply (simp_all)
+  apply (rule sym)
+  apply (rule add_0)
+  apply (unfold atomize_imp)
+  apply (unfold atomize_all)
+  apply (intro)
 
+
+
+  (*apply(induction n)
+  apply(simp_all)*)
   
    
 end
