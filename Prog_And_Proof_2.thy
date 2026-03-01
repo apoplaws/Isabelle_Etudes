@@ -36,17 +36,17 @@ lemma add_succ: "add m (Suc n) = Suc (add m n)"
 
 (* comm *)
 lemma add_com: "add m n = add n m"
-  apply (induction m)
+  apply (induct_tac m)
   apply (simp_all)
   apply (rule sym)
-  apply (rule add_0)
-  apply (unfold atomize_imp)
+   apply (rule add_0)
+  apply (subst add_succ)
+  apply (simp_all)
+  
+  (*apply (unfold atomize_imp)
   apply (unfold atomize_all)
   apply (intro)
-
-
-
-  (*apply(induction n)
+  apply(induction n)
   apply(simp_all)*)
   
    
