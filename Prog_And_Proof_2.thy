@@ -39,15 +39,53 @@ lemma add_com: "add m n = add n m"
   apply (induct_tac m)
   apply (simp_all)
   apply (rule sym)
-   apply (rule add_0)
+  apply (rule add_0)
   apply (subst add_succ)
   apply (simp_all)
+  done
+
+(* 2.3 *)
+fun count :: "'a \<Rightarrow> 'a list \<Rightarrow> nat"
+where
+"count x [] = 0"
+|"count x (y # xs) = (count x xs) + (if x = y then 1 else 0)"
+
+lemma count_not_increase: "count a (y#xs) \<le> (count a xs)+1"
+  apply(induct xs)
+  apply(auto)
+  done
+
+lemma nomore_as: "count a l \<le> length l" 
+  apply(induct_tac l)
+  apply(auto)
+  done
+
+(* 2.4 *)
+fun snoc :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a list"
+  where
+"snoc [] a = [a]"
+|"snoc (x # xs) a = x # (snoc xs a)"
+
+fun rev_s :: "'a list \<Rightarrow> 'a list"
+  where 
+"rev_s [] = []"
+|"rev_s (x # xs) = snoc (rev_s xs) x"
+
+lemma rev_prop : "snoc (rev_s xs) x = rev_s (x # xs)"
+  apply(auto)
+  done 
+
+lemma rev_lead: "rev_s ( rev_s (x#xs)) = x# (rev_s (rev_s xs))"
+  apply(induct_tac xs)
+  apply(auto)
   
-  (*apply (unfold atomize_imp)
-  apply (unfold atomize_all)
-  apply (intro)
-  apply(induction n)
-  apply(simp_all)*)
+
+
+lemma rev_rev_by_snoc: "rev_s (rev_s xs) = xs"
+  apply (induct_tac xs)
+  apply (auto)
+  apply (drule sym)
+  apply (subst rev_prop)
   
-   
+  
 end
