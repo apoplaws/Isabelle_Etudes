@@ -119,5 +119,53 @@ lemma sum_sub: "sum_up_to_n n = (n * (n + 1)) div 2"
     done
   done
 
-  
+(* 2.6 *)
+datatype 'a tree = Tip | Node " 'a tree" 'a " 'a tree"
+
+fun mirror :: "'a tree \<Rightarrow> 'a tree"
+  where 
+    "mirror Tip = Tip" | 
+    "mirror (Node l a r) = Node (mirror r) a (mirror l)"
+
+lemma "mirror(mirror t) = t" 
+  apply(induction t rule: mirror.induct)  
+   apply(auto)
+  done 
+
+fun contents :: "'a tree \<Rightarrow> 'a list"
+  where
+  "contents Tip = []"|
+  "contents (Node l a r) = (contents l) @ [a] @ (contents r)"
+
+definition sum_tree :: "nat tree \<Rightarrow> nat"
+  where
+  "sum_tree x = sum_list (contents x)"
+
+value "sum_tree (Node (Node Tip 2 Tip) 1 Tip)"
+
+(* 2.7 *)
+fun preorder_grab :: "'a tree \<Rightarrow> 'a list"
+  where 
+  "preorder_grab Tip = []"|
+  "preorder_grab (Node l a r) = a#preorder_grab(l)@preorder_grab(r)"
+
+fun postorder_grab :: "'a tree \<Rightarrow> 'a list"
+  where 
+  "postorder_grab Tip = []"|
+  "postorder_grab (Node l a r) = postorder_grab(l)@postorder_grab(r)@[a]"
+
+
+lemma preordmir: "preorder_grab(mirror t) = rev (postorder_grab t)"
+  apply(induct_tac t)
+  (* works well apply(auto)*)
+   apply(simp)
+  subgoal premises pf
+    apply(unfold mirror.simps, unfold preorder_grab.simps)
+    apply(unfold postorder_grab.simps)
+    apply(subst pf(2), subst pf(1))
+    apply(simp)
+  done
+
+(* 2.8 *)
+
 end
