@@ -75,17 +75,30 @@ lemma rev_prop : "snoc (rev_s xs) x = rev_s (x # xs)"
   apply(auto)
   done 
 
-lemma rev_lead: "rev_s ( rev_s (x#xs)) = x# (rev_s (rev_s xs))"
+lemma rev_lead: "rev_s (snoc xs a) = a# (rev_s xs)"
   apply(induct_tac xs)
-  apply(auto)
+  apply(unfold snoc.simps, unfold rev_s.simps, unfold snoc.simps)
+  apply(rule refl)
   
+  subgoal premises pr
+    apply (subst pr(1))
+    apply (unfold snoc.simps)
+    apply (rule refl)
+    done
+  done
 
+value "rev_s (rev_s [(1::nat), 2, 3])"
 
 lemma rev_rev_by_snoc: "rev_s (rev_s xs) = xs"
   apply (induct_tac xs)
-  apply (auto)
-  apply (drule sym)
-  apply (subst rev_prop)
-  
+  apply (simp)
+  apply(drule sym)
+  subgoal premises p
+    apply(subst (2) p(1))
+    apply(unfold rev_s.simps)
+    apply(rule rev_lead)
+    done
+  done
+     
   
 end
