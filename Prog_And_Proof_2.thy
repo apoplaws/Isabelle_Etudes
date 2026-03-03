@@ -99,6 +99,25 @@ lemma rev_rev_by_snoc: "rev_s (rev_s xs) = xs"
     apply(rule rev_lead)
     done
   done
-     
+
+
+(* 2.5 *)
+ML \<open>Ctr_Sugar.ctr_sugar_of @{context} @{type_name nat} |> Option.map #ctrs\<close>
+
+fun sum_up_to_n :: "nat \<Rightarrow> nat"
+  where
+  "sum_up_to_n 0 = 0"
+| "sum_up_to_n (Nat.Suc n) = n + 1 + (sum_up_to_n n)"
+
+value "sum_up_to_n 3"
+
+lemma sum_sub: "sum_up_to_n n = (n * (n + 1)) div 2"
+  apply (induct_tac n, simp)
+  apply(unfold sum_up_to_n.simps)
+  subgoal premises p
+    apply(subst p(1), simp)
+    done
+  done
+
   
 end
