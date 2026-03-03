@@ -165,7 +165,21 @@ lemma preordmir: "preorder_grab(mirror t) = rev (postorder_grab t)"
     apply(subst pf(2), subst pf(1))
     apply(simp)
   done
-
+  done
 (* 2.8 *)
+fun intersperse :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"
+  where 
+  "intersperse a [] = []"|
+  "intersperse a (x#xs) = [x, a]@(intersperse a xs)"
+
+lemma map_nat : "map f (intersperse a xs) = intersperse (f a) (map f xs)"
+   apply( induct_tac xs)
+   apply( simp)
+  subgoal premises pf
+    apply (unfold intersperse.simps)
+    apply(simp add: map_def )
+    apply(rule pf(1))
+    done
+  done
 
 end
