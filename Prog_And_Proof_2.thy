@@ -182,4 +182,38 @@ lemma map_nat : "map f (intersperse a xs) = intersperse (f a) (map f xs)"
     done
   done
 
+(* 2.9 *)
+fun itadd :: "nat \<Rightarrow> nat \<Rightarrow> nat"
+  where
+"itadd 0 n = n"|
+"itadd (Suc m) n = itadd m (Suc n)"
+
+lemma add_eq_itadd : "itadd m n = add m n"
+  apply (induction m arbitrary: n)
+  apply(unfold itadd.simps)
+   apply(unfold add.simps)
+   apply(rule refl)
+  subgoal premises ps
+    (*add m (Suc n) = Suc (add m n)*)
+    (*apply(subst add_succ [where m="m" and n="(Suc n)"])*)
+    apply(subst add_succ [symmetric])
+    apply(rule ps(1))
+    done
+  done
+
+(* 2.10 *)
+datatype tree0 = Elf | Nd tree0 tree0
+
+fun all_nodes :: "tree0 \<Rightarrow> nat"
+  where 
+"all_nodes Elf = 1"|
+"all_nodes (Nd t s) = 1+(all_nodes t)+(all_nodes s)"
+
+fun explode :: "nat \<Rightarrow> tree0 \<Rightarrow> tree0"
+  where 
+"explode 0 t = t"|
+"explode (Suc n) t = explode n (Nd t t)"
+
+value "explode 6 (Nd Elf Elf)"
+
 end
