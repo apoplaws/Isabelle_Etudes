@@ -214,6 +214,31 @@ fun explode :: "nat \<Rightarrow> tree0 \<Rightarrow> tree0"
 "explode 0 t = t"|
 "explode (Suc n) t = explode n (Nd t t)"
 
-value "explode 6 (Nd Elf Elf)"
+value "all_nodes(explode 3 (Nd Elf Elf))"
+value "(2::nat)^3"
+
+lemma double : "a + a = (2::nat)*a"
+  apply(induction a)
+   apply(auto)
+  done
+  
+
+lemma explode_form : "all_nodes( explode n t) = (((2::nat)^(n))-1)+((2::nat)^n)*(all_nodes t)"
+  apply(induction n arbitrary: t)
+   apply(simp)[1]
+  apply (unfold explode.simps)
+  subgoal premises ps  
+    apply(subst ps(1))
+    apply(subst all_nodes.simps)
+    apply(subst  Power.monoid_mult_class.power_Suc2)
+    apply(subst add.assoc)
+    apply(subst double)
+    apply(subst add_mult_distrib2)
+    apply(auto)
+    done
+  done
+
+
+  (* apply (subst all_nodes.simps [where s="t" ] )*)
 
 end

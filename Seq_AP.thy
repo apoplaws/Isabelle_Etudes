@@ -4,7 +4,7 @@
 
 section \<open>Finite sequences\<close>
 
-theory Seq
+theory Seq_AP
   imports Main
 begin
 
@@ -31,6 +31,20 @@ fun make_seq :: "'a \<Rightarrow> 'a seq"
 where
   "make_seq x = Seq x Empty"
 
+fun head :: "'a seq \<Rightarrow> 'a possibly"
+where
+  "head Empty = R Xing"
+| "head (Seq x xs) = L x"
+
+fun tail :: "'a seq \<Rightarrow> 'a seq"
+where
+  "tail Empty = Empty"
+| "tail (Seq _ xs) = xs"
+
+fun map :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a seq \<Rightarrow> 'b seq"
+where
+  "map f Empty = Empty"
+| "map f (Seq x xs) = Seq (f x) (map f xs)"
 
 lemma conc_empty: "conc xs Empty = xs"
   by (induct xs) simp_all
