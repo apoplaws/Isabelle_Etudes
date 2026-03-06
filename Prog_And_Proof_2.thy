@@ -241,4 +241,85 @@ lemma explode_form : "all_nodes( explode n t) = (((2::nat)^(n))-1)+((2::nat)^n)*
 
   (* apply (subst all_nodes.simps [where s="t" ] )*)
 
+(* 2.11 *)
+
+datatype exp = Var | Const int | Add exp exp | Mult exp exp
+
+fun eval :: "exp \<Rightarrow> int \<Rightarrow> int"
+  where
+"eval Var n = n"|
+"eval (Const c) n = c"|
+"eval (Add exp1 exp2) n = (eval exp1 n)+(eval exp2 n)"|
+"eval (Mult exp1 exp2) n = (eval exp1 n)*(eval exp2 n)"
+
+
+fun evalp :: "int list \<Rightarrow> int \<Rightarrow> int"
+  where
+"evalp [] n = 0"|
+"evalp (x#xs) n = x + n*evalp xs n"
+
+fun add_long :: "int list \<Rightarrow> int list \<Rightarrow> int list"
+  where 
+"add_long [] ys = ys"|
+"add_long xs [] = xs"|
+"add_long (x#xs) (y#ys) = (x+y)#add_long xs ys"
+
+value "add_long [1,2,3] [1,3,4,5,6]"
+
+fun del_lead_zero :: "int list \<Rightarrow> int list"
+where 
+"del_lead_zero [] = []"|
+"del_lead_zero (x#xs) = (if x=0 then (del_lead_zero xs) else (x#xs))"
+
+fun del_trial_zero :: "int list \<Rightarrow> int list"
+  where 
+"del_trial_zero xs = rev(del_lead_zero(rev xs))"
+
+fun mul_long :: "int list \<Rightarrow> int list \<Rightarrow> int list"
+  where
+"mul_long [] xs = []"|
+"mul_long xs [] = []"|
+"mul_long (x#xs) y = add_long (map (\<lambda>t. x*t) y) (mul_long xs (0#y))"
+
+value "mul_long [0,1] [1,31]"
+
+
+fun coeffs :: "exp \<Rightarrow> int list"
+  where
+"coeffs (Const c) = [c]"|
+"coeffs Var = [0,1]"|
+"coeffs (Add x1 x2) = add_long (coeffs x1) (coeffs x2)"|
+"coeffs (Mult x1 x2) = mul_long (coeffs x1) (coeffs x2)"
+
+fun nth_power :: "exp \<Rightarrow> nat \<Rightarrow> exp"
+  where
+"nth_power x 0 = Const 1"|
+"nth_power x (Suc n) = Mult x (nth_power x n)"
+
+value "coeffs (nth_power (Add Var (Const 1)) 10)"
+
+
+fun aux_gen :: "nat \<Rightarrow> nat list"
+  where
+  "aux_gen 0 = [0]"|
+  "aux_gen (Suc n) = (Suc n)#(aux_gen n)"
+
+fun gen :: "nat \<Rightarrow> nat list"
+  where
+  "gen n = rev (aux_gen n)"
+
+value "gen 4"
+value "zip [1::nat, 2] (gen 1)"
+
+value "foldl (+) 0 [0::nat,1]"
+value "foldl (\<lambda>x y. (Add x y)) (Const 0) [Var]"
+
+definition decoeff_1 :: "int list \<Rightarrow> exp"
+  where
+  "decoeff_1 pol = 
+    foldl (\<lambda>x y. (Add x y)) (Const 0) 
+      (map (\<lambda> p. Mult (Const (fst p)) (nth_power Var (snd p))) 
+        (zip pol (gen (length pol))))"
+
+value "decoeff_1 (coeffs (nth_power (Add (Const 1) Var) 5))"
 end
