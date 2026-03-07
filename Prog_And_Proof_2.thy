@@ -295,10 +295,11 @@ fun mul_long :: "int list \<Rightarrow> int list \<Rightarrow> int list"
 
 lemma mul_long_mul: "evalp (mul_long xs ys) n = (evalp xs n)*(evalp ys n)"
   (*apply(induction xs ys rule: mul_long.induct)*)
-  apply (induction xs arbitrary: ys)
+  apply (induction xs ys rule: mul_long.induct)
     apply(unfold mul_long.simps, unfold evalp.simps, simp)
+  apply(simp)
   subgoal premises ps
-    apply (subst mul_long.simps)
+    
 
 value "mul_long [0,1] [1,31]"
 
