@@ -264,6 +264,18 @@ fun add_long :: "int list \<Rightarrow> int list \<Rightarrow> int list"
 "add_long xs [] = xs"|
 "add_long (x#xs) (y#ys) = (x+y)#add_long xs ys"
 
+lemma add_long_add : "evalp (add_long x y) n = (evalp x n) + (evalp y n)"
+  apply(induction x y rule: add_long.induct)
+    apply (unfold add_long.simps, unfold evalp.simps, simp)
+  apply(simp)
+  subgoal premises ps
+    apply(subst ps)
+    apply(simp add:algebra_simps)
+    done
+  done
+    
+  
+
 value "add_long [1,2,3] [1,3,4,5,6]"
 
 fun del_lead_zero :: "int list \<Rightarrow> int list"
@@ -277,9 +289,16 @@ fun del_trial_zero :: "int list \<Rightarrow> int list"
 
 fun mul_long :: "int list \<Rightarrow> int list \<Rightarrow> int list"
   where
-"mul_long [] xs = []"|
+"mul_long [] ys = []"|
 "mul_long xs [] = []"|
-"mul_long (x#xs) y = add_long (map (\<lambda>t. x*t) y) (mul_long xs (0#y))"
+"mul_long (x#xs) ys = add_long (map (\<lambda>t. x*t) ys) (mul_long xs (0#ys))"
+
+lemma mul_long_mul: "evalp (mul_long xs ys) n = (evalp xs n)*(evalp ys n)"
+  (*apply(induction xs ys rule: mul_long.induct)*)
+  apply (induction xs arbitrary: ys)
+    apply(unfold mul_long.simps, unfold evalp.simps, simp)
+  subgoal premises ps
+    apply (subst mul_long.simps)
 
 value "mul_long [0,1] [1,31]"
 
@@ -330,70 +349,6 @@ fun decoeff_2 :: "int list \<Rightarrow> exp"
       else Add (Const x) (Mult Var (decoeff_2 xs)))"
 
 value "decoeff_2 (coeffs (nth_power (Add (Const 1) Var) 5))"
-
-
-(*lemma adding_long_evaluation: "evalp (add_long (x#xs) ys) m = (evalp (x#xs) m) + (evalp ys m)"
-  apply (induction xs arbitrary: ys)
-   apply (case_tac ys)
-  subgoal premises bc_c0
-    apply (subst bc_c0, subst bc_c0)
-    apply (subst add_long.simps)
-    apply (subst evalp.simps)
-    apply (subst evalp.simps)
-    apply (subst evalp.simps)
-    apply (subst evalp.simps)
-    apply (subst evalp.simps)
-    apply (simp)
-    done
-  subgoal premises bc_c1
-    apply (subst bc_c1, subst bc_c1)
-    apply (subst add_long.simps)
-    apply (subst evalp.simps)
-    apply (subst evalp.simps)
-    apply (subst evalp.simps)
-    apply (subst evalp.simps)
-    apply (subst add_long.simps)
-    apply (simp)
-    done
-  done
-  subgoal premises ist_c1
-    apply (subst ist_c1(1))_    
-
-
-
-lemma adding_long_evaluation: "evalp (add_long (x#xs) ys) m = (evalp (x#xs) m) + (evalp ys m)"
-  apply (case_tac xs)
-  subgoal premises ps1
-    apply (subst ps1(1), subst ps1(1))
-    apply(case_tac ys)
-    subgoal premises ps1_1
-      apply (subst ps1_1(1), subst ps1_1(1))
-      apply(simp)
-      done
-    subgoal premises ps1_2
-      apply (subst ps1_2(1), subst ps1_2(1))
-      apply (subst add_long.simps)
-      apply(subst evalp.simps)
-      apply(subst add_long.simps)
-      apply(subst evalp.simps)
-      apply(subst evalp.simps)
-      apply(subst evalp.simps)
-      apply(simp)
-      done
-    done
-  subgoal premises ps2
-    apply (subst ps2(1), subst ps2(1))
-    apply (case_tac ys)
-    subgoal premises ps2_1
-      apply (subst ps2_1(1), subst ps2_1(1))
-      apply (subst add_long.simps)
-      apply (subst evalp.simps)
-      apply (simp)
-      done
-    subgoal premises ps2_2
-      
-*)
-
 
 theorem equiv_of_repr : "evalp (coeffs e) x = eval e x"
   apply (induction e)
