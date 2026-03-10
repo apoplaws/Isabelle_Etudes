@@ -293,15 +293,32 @@ fun mul_long :: "int list \<Rightarrow> int list \<Rightarrow> int list"
 "mul_long xs [] = []"|
 "mul_long (x#xs) ys = add_long (map (\<lambda>t. x*t) ys) (mul_long xs (0#ys))"
 
+value "mul_long [2,1] [1,1]"
+
+lemma mul_const: "evalp (map ((*) x) va) n = x * evalp va n"
+  apply(induction va)
+  apply(auto)
+  subgoal premises ps
+    apply (simp add:algebra_simps)
+    done
+  done
+
 lemma mul_long_mul: "evalp (mul_long xs ys) n = (evalp xs n)*(evalp ys n)"
   (*apply(induction xs ys rule: mul_long.induct)*)
   apply (induction xs ys rule: mul_long.induct)
     apply(unfold mul_long.simps, unfold evalp.simps, simp)
   apply(simp)
   subgoal premises ps
-    
+    apply (simp add:map_def)
+    apply (simp add:add_long_add)
+    apply (subst ps(1))
+    apply (simp add:algebra_simps)
+    apply (subst mul_const)
+    apply (rule disjI2)
+    apply (rule refl)
+    done 
+  done
 
-value "mul_long [0,1] [1,31]"
 
 
 fun coeffs :: "exp \<Rightarrow> int list"
@@ -361,4 +378,16 @@ theorem equiv_of_repr : "evalp (coeffs e) x = eval e x"
     apply(simp)
   subgoal premises ps
     apply (unfold eval.simps)
+    apply (unfold coeffs.simps)
+    apply (simp add:add_long_add)
+    apply (subst ps(1), subst ps(2), rule refl)
+    done
+  subgoal premises ps
+    apply (unfold eval.simps)
+    apply (unfold coeffs.simps)
+    apply (simp add:mul_long_mul)
+    apply (subst ps(1), subst ps(2), rule refl)
+    done
+  done
+
 end
