@@ -52,20 +52,55 @@ fun contains :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool"
 
 fun ins1 :: "nat \<Rightarrow> nat tree \<Rightarrow> nat tree"
   where 
-  "ins1 n Tip = (Node Tip n  Tip)"
-| "ins1 n (Node Tip a Tip) = (if n > a then (Node Tip a (Node Tip n Tip)) else (if n < a then (Node Tip n (Node Tip a Tip)) else (Node Tip a Tip)))"
-| "ins1 n (Node l a r) = (if n < a then (Node (ins1 n l) a r) else (if n>a then (Node l a (ins1 n r)) else (Node l a r)))"
+  "ins1 n Tip = (Node Tip n Tip)"
+| "ins1 n (Node Tip a (Node l x r)) = 
+    (if n=a then (Node Tip a (Node l x r)) else 
+      (if a < x then (Node (Node Tip a Tip) n (Node l x r)) 
+      else (Node (Node l x r) n (Node Tip a Tip))))"
+| "ins1 n (Node x  a Tip) = (Node x n (Node Tip a Tip)) "
+| "ins1 n (Node (Node l1 a1 r1) a (Node l2 a2 r2)) = 
+    (if a > a1 then 
+          (Node (Node l1 a1 r1) n (ins1 a (Node l2 a2 r2))) 
+     else (Node (ins1 a (Node l1 a1 r1)) n (Node l2 a2 r2)) ) "
 
 fun ins1_lst :: "nat list \<Rightarrow> nat tree"
   where 
   "ins1_lst [] = Tip"
 | "ins1_lst (x#xs) = ins1 x (ins1_lst xs)"
 
+
 value "ins1_lst [2,0,1]"
 value "is_ord (ins1_lst [1,2,4,2,6,1,7,4,9])"
+value "ins1 1 (Node (Node Tip 2 Tip) 0 (Node Tip 2 Tip))"
+
+lemma ls: "\<forall> d. \<forall>m . \<exists>s. \<exists>t . ins1 m d = (Node s m t)"
+  apply (rule allI, rule allI)
+  apply (case_tac d)
+   apply (simp)
+  apply(simp)
+  apply(case_tac x21)
+   apply(auto)
+   apply(case_tac x23)
+    apply(auto)
+  apply(case_tac x23)
+   apply(auto)
+  done
+
+
 
 lemma preserve_ord: "is_ord x \<Longrightarrow> is_ord (ins1 n x)"
-
+  apply(induction x) 
+  apply(unfold ins1.simps, unfold is_ord.simps,
+        unfold ls_tr.simps, simp)
+  apply(auto)
+  apply(case_tac x1)
+   apply(case_tac x2a)
+   apply(auto)
+  subgoal premises ps
+   
+   
+  
+    
 
 
 end
