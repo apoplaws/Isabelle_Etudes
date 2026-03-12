@@ -40,6 +40,12 @@ fun ls_tr :: "nat tree \<Rightarrow> nat tree \<Rightarrow> bool"
 | "ls_tr y Tip = (if y = Tip then True else False)"
 | "ls_tr (Node _ a1 _) (Node _ a2 _) =  (if a1 \<le> a2 then True else False)"
 
+lemma "ls_tr (Node l a r) x \<longrightarrow> (\<exists> l1. \<exists> r1. \<exists> a1. (x = (Node l1 a1 r1)) \<and> (a1 \<ge> a))"
+  apply(rule impI)
+  apply (case_tac x)
+   apply(simp)
+   
+
 fun is_ord :: "nat tree \<Rightarrow> bool"
   where
   "is_ord Tip = True"
@@ -94,9 +100,11 @@ lemma preserve_ord: "is_ord x \<Longrightarrow> is_ord (ins1 n x)"
         unfold ls_tr.simps, simp)
   apply(auto)
   apply(case_tac x1)
+   apply(simp)[1]
    apply(case_tac x2a)
+    apply(simp)
    apply(auto)
-  subgoal premises ps
+  
    
    
   
