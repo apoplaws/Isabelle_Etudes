@@ -32,7 +32,7 @@ fun contents :: "'a tree \<Rightarrow> 'a list"
 fun set_out_of_tree :: "'a tree \<Rightarrow> 'a set"
   where
   "set_out_of_tree Tip = {}"
-| "set_out_of_tree (Node l a r) = {a} \<union> set_out_of_tree(l) \<union> set_out_of_tree(r)"  done
+| "set_out_of_tree (Node l a r) = {a} \<union> set_out_of_tree(l) \<union> set_out_of_tree(r)"
 
 fun ls_tr :: "nat tree \<Rightarrow> nat tree \<Rightarrow> bool"
   where
@@ -40,11 +40,21 @@ fun ls_tr :: "nat tree \<Rightarrow> nat tree \<Rightarrow> bool"
 | "ls_tr y Tip = (if y = Tip then True else False)"
 | "ls_tr (Node _ a1 _) (Node _ a2 _) =  (if a1 \<le> a2 then True else False)"
 
-lemma "ls_tr (Node l a r) x \<longrightarrow> (\<exists> l1. \<exists> r1. \<exists> a1. (x = (Node l1 a1 r1)) \<and> (a1 \<ge> a))"
+
+
+lemma revif: "if p then True else False \<longrightarrow> p"
+  apply(simp)
+  done
+
+lemma right_node:  "ls_tr (Node l a r) x \<longrightarrow> (\<exists> l1. \<exists> r1. \<exists> a1. (x = (Node l1 a1 r1)) \<and> (a1 \<ge> a))"
   apply(rule impI)
-  apply (case_tac x)
+  apply (cases x)
    apply(simp)
-   
+ (* apply(subgoal_tac "ls_tr (Node l a r) x")*)
+  apply(simp)
+  apply(rule ccontr)
+  apply(simp)
+  done
 
 fun is_ord :: "nat tree \<Rightarrow> bool"
   where
@@ -95,16 +105,17 @@ lemma ls: "\<forall> d. \<forall>m . \<exists>s. \<exists>t . ins1 m d = (Node s
 
 
 lemma preserve_ord: "is_ord x \<Longrightarrow> is_ord (ins1 n x)"
-  apply(induction x) 
+  apply(induction x)
   apply(unfold ins1.simps, unfold is_ord.simps,
         unfold ls_tr.simps, simp)
   apply(auto)
   apply(case_tac x1)
    apply(simp)[1]
    apply(case_tac x2a)
-    apply(simp)
-   apply(auto)
-  
+   apply(simp)[1]
+   apply(auto)[1]
+  apply(simp)
+
    
    
   
