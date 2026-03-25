@@ -89,8 +89,9 @@ value "ins1_lst [2,0,1]"
 value "is_ord (ins1_lst [1,2,4,2,6,1,7,4,9])"
 value "ins1 1 (Node (Node Tip 2 Tip) 0 (Node Tip 2 Tip))"
 
-lemma ls: "\<forall> d. \<forall>m . \<exists>s. \<exists>t . ins1 m d = (Node s m t)"
-  apply (rule allI, rule allI)
+(*lemma ls: "\<forall> d. \<forall>m . \<exists>s. \<exists>t . ins1 m d = (Node s m t)"*)
+lemma ls: "\<exists>s. \<exists>t . ins1 m d = (Node s m t)"
+  (*apply (rule allI, rule allI)*)
   apply (case_tac d)
    apply (simp)
   apply(simp)
@@ -115,11 +116,19 @@ lemma preserve_ord: "is_ord x \<Longrightarrow> is_ord (ins1 n x)"
    apply(simp)[1]
    apply(auto)[1]
   apply(simp)
-
-   
-   
-  
+  apply(subgoal_tac "x2a=Node l a r")
+   apply(simp)
+   apply(auto)
+      apply(subgoal_tac "ins1 x2 (Node l a r) = Node l1 x2 r1" )
+  apply subgoal premises ps
+    apply(subst ps(11))
+    apply(auto)
+    using ps
+    apply(linarith)
+    done
+  apply subgoal premises ps
+  apply(rule_tac ls[where ?m="x2" and ?d="(Node l a r)"])
     
-
-
+    
+       
 end
